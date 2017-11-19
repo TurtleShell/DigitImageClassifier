@@ -1,5 +1,10 @@
 #Vector Neural Network
 
+"""
+This file contains the neural network itself, including
+functions to train, save, and load a network.
+"""
+
 import numpy as np
 import math
 import pickle

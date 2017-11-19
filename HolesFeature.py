@@ -1,4 +1,11 @@
 #HolesFeature
+"""
+The purpose of this file is to create an input
+feature that counts the number and positions
+of holes in the numbers. By holes I mean
+the inside of circles.
+"""
+
 
 from BreadthFirst import *
 
@@ -15,18 +22,6 @@ def expandNumber(squareMatrix, darkCoordsList):
 				fatSquareMatrix[surroundingCoords.y, surroundingCoords.x] = 1
 
 	return fatSquareMatrix
-
-
-#def isWithinNumEdgeCoords(coords, edgeBounds):
-#	minX, minY, maxX, maxY = edgeBounds[0], edgeBounds[1], edgeBounds[2], edgeBounds[3]
-#
-#	x = coords[0]
-#	y = coords[1]
-#
-#	if (minX <= x <= maxX) and (minY <= y <= maxY):
-#		return True
-#	else:
-#		return False
 
 
 def listContainsEdge(coordsList, edgeBounds):
@@ -161,20 +156,7 @@ def findHoles(imgVector):
 
 				holeObj = HoleObj(holeCoords, cmpX, cmpY)
 
-				#holeObj = [1]
-				#numPixels = len(holeCoords)
-				#numPixels = math.log(1+numPixels)
-				#holeObj.append(numPixels)
-				#avgCoords = getAverageCoords(holeCoords)
-#
-				#compX, compY = compareAvgCoordsToImage(avgCoords, imgVector)
-#
-				#holeObj.append(compX)
-				#holeObj.append(compY)
-
 				incompleteHolesList.append(holeObj)
-
-
 
 	return holesList, incompleteHolesList
 
@@ -184,7 +166,6 @@ def createHolesFeatureMatrixFromInput(inputMatrix):
 	holeObjSize = 4
 	holesToConsier = 2
 	incompleteHolesToConsier = 2
-
 
 	featurelessInputMatrix = inputMatrix[0:784,:]
 
@@ -215,64 +196,3 @@ def createHolesFeatureMatrixFromInput(inputMatrix):
 
 
 	return featureMatrix
-
-def main():
-
-
-	#imageNum = int(sys.argv[1])
-#
-	trainingCases = 1
-	validCases = 200
-#
-#
-#
-	#trainingData, validationData, testData = loadMINSTVectorSubset(trainingCases, validCases, 1)
-#
-	#validVector = validationData[0][:,imageNum]
-	##printMNISTVector(validVector)
-#
-	#holes = findHoles(validVector)
-	#
-	#print("holes", holes)
-
-	#return
-
-	myImageVector = createMNISTVector("BreadthImg.bmp")[:,0]
-
-	darkCoordsList = traverseNumber(myImageVector, (14,14), False)
-
-	squareMatrix = imgVectorToSquareMatrix(myImageVector)
-	#printMNISTVector(squareMatrixToImgVector(squareMatrix))
-
-	expandedSquareMatrix = expandNumber(squareMatrix, darkCoordsList)
-#
-	expandedImgVector = squareMatrixToImgVector(expandedSquareMatrix)
-#
-	#printMNISTVector(expandedImgVector)
-
-	myImageMatrix = myImageVector.reshape((784,1))
-	featureMatrix = createHolesFeatureMatrixFromInput(myImageMatrix)
-	print(featureMatrix)
-
-	#holes = findHoles(myImageVector)
-	#
-	#print("holes", holes)
-
-
-
-	#trainingData, validationData, testData = loadMINSTVectorSubset(trainingCases, validCases, 1)
-
-
-	#featureMatrix = createHolesFeatureMatrixFromInput(trainingData[0])
-
-	#print(trainingData[1])
-
-	#print()
-
-	#print(featureMatrix[783:, :])
-
-	#print(featureMatrix)
-
-
-if __name__ == "__main__":
-	main()

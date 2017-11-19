@@ -1,5 +1,11 @@
 #LongestLines
 
+"""
+This file creates a feature that tracks
+the longest dark line and the number of
+distinct lines in each major direction
+"""
+
 import math
 
 from DataFormatFunctions import *
@@ -82,13 +88,3 @@ def createLongestLinesFeatureMatrixFromInput(inputMatrix):
 
 	return featureMatrix
 
-
-def main():
-
-	myImageVector = createMNISTVector("BreadthImg.bmp")
-
-	print(createLongestLinesFeatureMatrixFromInput(myImageVector))
-
-
-if __name__ == "__main__":
-	main()

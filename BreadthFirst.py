@@ -1,13 +1,17 @@
 #BreadthFirst
 
+"""
+The purpose of this file is to create a feature
+that recreates the order that the image was drawn
+and tracks the direction of the line
+"""
+
 import numpy as np
 import math
 
 from DataFormatFunctions import *
 from TraversalHelperFunctions import *
 from HelperClasses import *
-
-
 
 
 
@@ -235,98 +239,3 @@ def compareAvgCoordsToImage(coords, imgVector):
 	imgAvgCoords = getAvgCoordsOfImage(imgVector)
 	return getDirectionBtCoords(coords, imgAvgCoords)
 
-
-
-def main():
-	
-
-	#coordsList = [(0,0), (2,2), (1,-1),(2,3)]
-#
-	#print(howManyGroups(coordsList))
-
-	#return
-
-
-
-	trainingCases = 20
-	validCases = 2
-
-
-	#trainingData, validationData, testData = loadMINSTVectorSubset(trainingCases, validCases, 1)
-#
-	#trainInputMatrix = trainingData[0]
-#
-	#createBreadthFeatureMatrixFromInput(trainInputMatrix)
-#
-	#return
-
-
-	#coords = (0,0)
-	#print(createSurroundCoordsList(coords))
-	#return
-
-
-
-	myImageVector = createMNISTVector("BreadthImg.bmp")[:,0]
-	#print(createBreadthFeatureMatrixFromInput(myImageVector))
-	#return
-
-
-	firstCoords = findFirstCoords(myImageVector)
-	resultCoords = traverseNumber(myImageVector, firstCoords, True)
-
-	print("len rc", len(resultCoords))
-
-	#chunks = len(resultCoords)/10
-	chunks = 10
-	avgCoordsList = createAvgCoordsList(resultCoords, chunks)
-
-
-	#resultImgVector = createImageVectorFromList(avgCoordsList)
-	#printMNISTVector(resultImgVector)
-
-
-	#resultVector = createDirectionVector(avgCoordsList)
-	#print(resultVector)
-
-
-	#featureMatrix = np.zeros(((chunks*2)+2, 2))
-	#setDirectionVector(avgCoordsList, 0, featureMatrix)
-	#setDirectionVector(avgCoordsList, 1, featureMatrix)
-#
-	#print(featureMatrix)
-
-	#resultCoords1 = resultCoords[150:]
-	##print(resultCoords)
-	#resultImgVector = createImageVectorFromList(resultCoords1)
-	#printMNISTVector(resultImgVector)
-	
-
-	resultCoords1 = resultCoords[0:30]
-	#print(resultCoords)
-	resultImgVector = createImageVectorFromList(resultCoords1)
-	printMNISTVector(resultImgVector)
-
-	resultCoords2 = resultCoords[30:60]
-	resultImgVector = createImageVectorFromList(resultCoords2)
-	printMNISTVector(resultImgVector)
-
-	resultCoords3 = resultCoords[60:90]
-	resultImgVector = createImageVectorFromList(resultCoords3)
-	printMNISTVector(resultImgVector)
-
-	resultCoords4 = resultCoords[90:120]
-	resultImgVector = createImageVectorFromList(resultCoords4)
-	printMNISTVector(resultImgVector)
-
-	resultCoords5 = resultCoords[120:150]
-	resultImgVector = createImageVectorFromList(resultCoords5)
-	printMNISTVector(resultImgVector)
-
-	resultCoords6 = resultCoords[150:]
-	resultImgVector = createImageVectorFromList(resultCoords6)
-	printMNISTVector(resultImgVector)
-
-
-if __name__ == "__main__":
-	main()
