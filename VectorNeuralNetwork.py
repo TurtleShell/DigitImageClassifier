@@ -15,20 +15,25 @@ from MNISTLoader import *
 
 
 class VNeuralNet(object):
-	def __init__(self, dimensions, weightRange):
+	def __init__(self, dimensions, weightRange, selectedFeaturesObj):
 		self.dimensions = dimensions
 		self.layers = len(self.dimensions)
 		self.momentumMatrices = []
+		self.selectedFeaturesObj = selectedFeaturesObj
 		for i in range(self.layers):
 			self.momentumMatrices.append(None)
 
 		self.initializeWeights(weightRange)
+
 
 	def getBotLayerDim(self):
 		return self.dimensions[0]
 
 	def getFirstHidLayerOutput(self):
 		return self.outputMList[1]
+
+	def getSelectedFeaturesObj(self):
+		return self.selectedFeaturesObj
 
 	def initializeWeights(self, valueRange):
 		lowerbound = -valueRange/2
@@ -43,7 +48,7 @@ class VNeuralNet(object):
 			else:
 				prevLayerNus = self.dimensions[layeri-1]
 				thisLayerNus = self.dimensions[layeri]
-				weightMatrix = np.random.uniform(lowerbound, upperbound, (thisLayerNus, prevLayerNus))#.astype(np.float32)
+				weightMatrix = np.random.uniform(lowerbound, upperbound, (thisLayerNus, prevLayerNus))
 
 				self.weightsList.append(weightMatrix)
 
@@ -84,9 +89,7 @@ class VNeuralNet(object):
 			else:
 				prevOMatrix = self.outputMList[layeri-1].astype(np.float32)
 				weightMatrix = self.weightsList[layeri].astype(np.float32)
-
 				signalMatrix = np.dot(weightMatrix, prevOMatrix)
-
 				self.signalMList.append(signalMatrix)
 
 				#Now we need to turn the signal into an output
@@ -120,13 +123,9 @@ class VNeuralNet(object):
 				#derivCostMatrix is sizeOfOutputLayer X N
 				#derivCostMatrix is a combination of targetMatrix and self.outputMList[-1]
 				netOutputMatrix = self.outputMList[-1]
-
 				derivCostMatrix = (netOutputMatrix - targetMatrix)
-				
 				derivNonlinMatrix = vectorizedDerivNonlin(netOutputMatrix)
-
 				deltaMatrix = derivCostMatrix
-
 				deltaMList[layeri] = deltaMatrix
 
 
@@ -141,22 +140,16 @@ class VNeuralNet(object):
 
 				layerOutputMatrix = self.outputMList[layeri]
 				derivNonlinMatrix = vectorizedDerivNonlin(layerOutputMatrix)
-
 				deltaMatrix = np.multiply(summedWDMatrix, derivNonlinMatrix)
-
 				deltaMList[layeri] = deltaMatrix
 
 
 			belowOutputMatrix = self.outputMList[layeri-1]
-
 			belowOutputMatrix = belowOutputMatrix.astype(np.float32)
 			deltaMatrix = deltaMatrix.astype(np.float32)
 			gradientMatrix = np.transpose(np.dot(belowOutputMatrix, np.transpose(deltaMatrix)))
-
 			gradientMatrix = trainParams.learningRate*gradientMatrix
-
 			regMatrix = trainParams.reg * trainParams.learningRate * self.weightsList[layeri]
-
 			momentumMatrix = self.applyMomentum(layeri, gradientMatrix, trainParams.momentumDecay)
 
 			self.weightsList[layeri] = self.weightsList[layeri] - gradientMatrix - regMatrix
@@ -228,10 +221,14 @@ def saveNeuralNet(neuralNet, fileName):
 
 
 def loadNeuralNet(fileName):
-	f = open(fileName, 'rb')
-	neuralNet = pickle.load(f)
-	f.close()
-	return neuralNet
+	try:
+		f = open(fileName, 'rb')
+		neuralNet = pickle.load(f)
+		f.close()
+		return neuralNet
+	except:
+		print("ERROR\nNetwork named "+fileName+" not found.")
+		exit()
 
 
 def evalNonlinearity(value):
@@ -253,14 +250,6 @@ def derivLogistic(output):
 		return output*(1-output)
 
 vectorizedDerivNonlin = np.vectorize(derivLogistic)
-
-
-
-def loadMNIST():
-	f = gzip.open('MNIST_data/mnist.pkl.gz', 'rb')
-	training_data, validation_data, test_data = pickle.load(f, encoding='latin1')
-	f.close()
-	return training_data, validation_data, test_data
 
 
 def printProgress(percentComplete):

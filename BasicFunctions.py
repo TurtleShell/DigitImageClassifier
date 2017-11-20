@@ -12,10 +12,12 @@ import datetime
 
 from VectorNeuralNetwork import *
 from Features import *
+from NumberClassifyGui import *
 
 
 
 def trainAndTestDigitClassifier(
+	mnistFile, saveNetworkName=None,
 	trainSubset=None, validSubset=None,
 	dimensions=None, weightRange=None,
 	iterations=None, learningRate=None, reg=None,
@@ -33,13 +35,16 @@ def trainAndTestDigitClassifier(
 	#data until the project absolutley finished
 
 	#=====Features=====#
-	if not (inputFeature): inputFeature = True
-	if not (breadthFeature): breadthFeature = True
-	if not (holesFeature): holesFeature =  True
-	if not (lineLenFeature): lineLenFeature = True
+	if not (inputFeature): 		inputFeature 	= True
+	if not (breadthFeature):	breadthFeature 	= True
+	if not (holesFeature): 		holesFeature 	= True
+	if not (lineLenFeature): 	lineLenFeature	= True
 
-	training_data, validation_data = assignFeatures(trainSubset, validSusbet, inputFeature,
-												breadthFeature, holesFeature, lineLenFeature)
+	selectedFeaturesObj = SelectedFeatures(inputFeature, breadthFeature,
+											holesFeature, lineLenFeature)
+
+	training_data, validation_data = assignFeatures(mnistFile, trainSubset, 
+													validSusbet, selectedFeaturesObj)
 
 	inputSize = np.shape(training_data[0])[0]
 
@@ -48,18 +53,18 @@ def trainAndTestDigitClassifier(
 	dimensions = [inputSize, 240, 10]
 	print("Dimensions:", dimensions)
 
-	if not (weightRange): weightRange = .2
-	if not (iterations): iterations = 500
+	if not (weightRange):	weightRange = .2
+	if not (iterations): 	iterations = 200
 	print("Iterations:", iterations)
 
-	if not (learningRate): learningRate = .01
-	if not (reg): reg = 0
-	if not (batchSize): batchSize = 5
+	if not (learningRate):	learningRate = .01
+	if not (reg):			reg = 0
+	if not (batchSize):		batchSize = 5
 	if not (momentumDecay): momentumDecay = 0
 
 	networkTrainParams = NetworkTrainParams(learningRate, reg, batchSize, momentumDecay)
 
-	neuralNet = VNeuralNet(dimensions, weightRange)
+	neuralNet = VNeuralNet(dimensions, weightRange, selectedFeaturesObj)
 
 	if (lineLenFeature):
 		neuralNet.passUpNodes(inputSize-8, 8, 2)
@@ -75,9 +80,27 @@ def trainAndTestDigitClassifier(
 
 	testNeuralNet(neuralNet, validation_data)
 
+	if (saveNetworkName):
+		saveNeuralNet(neuralNet, saveNetworkName)
+
+
 
 def main():
-	trainAndTestDigitClassifier()
+
+	if (len(sys.argv) < 2):
+		print("Please enter directory of the MNIST data")
+		return
+
+	mnistFile = sys.argv[1]
+
+	if (len(sys.argv) >= 3):
+		saveNetworkName = sys.argv[2]
+	else:
+		saveNetworkName="UnnamedNetwork"
+
+	trainAndTestDigitClassifier(mnistFile, saveNetworkName)
+
+	runGui(saveNetworkName)
 
 if __name__ == "__main__":
 	main()

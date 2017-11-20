@@ -118,3 +118,14 @@ class NetworkTrainParams(object):
 		self.reg = reg
 		self.batchSize = batchSize
 		self.momentumDecay = momentumDecay
+
+
+class SelectedFeatures(object):
+
+	def __init__(self, inputFeature, breadthFeature,
+					holesFeature, lineLenFeature):
+
+		self.inputFeature = inputFeature 
+		self.breadthFeature= breadthFeature
+		self.holesFeature = holesFeature 
+		self.lineLenFeature= lineLenFeature

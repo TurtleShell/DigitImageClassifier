@@ -6,10 +6,15 @@ import numpy as np
 from PIL import Image
 
 
-def loadMNISTVector():
-	f = gzip.open('/Users/Evan/Documents/python_files/NeuralNetwork/MNIST_data/mnist.pkl.gz', 'rb')
-	training_data, validation_data, test_data = pickle.load(f, encoding='latin1')
-	f.close()
+def loadMNISTVector(mnistFile):
+	try:
+		f = gzip.open(mnistFile, 'rb')
+		training_data, validation_data, test_data = pickle.load(f, encoding='latin1')
+		f.close()
+	except:
+		print("ERROR\nFailed to open MNIST data. Please be sure the proper directory "+
+			"is specified and the file is in the format of <filename>.pkl.gz")
+		exit()
 
 
 	training_data = replaceLabelsWithVectors(training_data)
@@ -19,8 +24,8 @@ def loadMNISTVector():
 	return training_data, validation_data, test_data
 
 
-def loadMINSTVectorSubset(trainSubSize, validSubSize, testSubSize):
-	trainingData, validationData, testData = loadMNISTVector()
+def loadMINSTVectorSubset(mnistFile, trainSubSize, validSubSize, testSubSize):
+	trainingData, validationData, testData = loadMNISTVector(mnistFile)
 
 	trainInput = trainingData[0]
 	validInput = validationData[0]

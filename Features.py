@@ -15,12 +15,12 @@ from TestFunctions import *
 
 
 
-def assignFeatures(trainSubset, validSusbet, inputFeature, breadthFeature, holesFeature, lineLenFeature):
+def assignFeatures(mnistFile, trainSubset, validSusbet, selectedFeaturesObj):
 
-	training_data, validation_data, test_data = loadMINSTVectorSubset(trainSubset, validSusbet, 0)
+	training_data, validation_data, test_data = loadMINSTVectorSubset(mnistFile, trainSubset, validSusbet, 0)
 
-	featureTrainMatrix = createFeatures(training_data[0], inputFeature, breadthFeature, holesFeature, lineLenFeature)
-	featureValidMatrix = createFeatures(validation_data[0], inputFeature, breadthFeature, holesFeature, lineLenFeature)
+	featureTrainMatrix = createFeatures(training_data[0], selectedFeaturesObj)
+	featureValidMatrix = createFeatures(validation_data[0], selectedFeaturesObj)
 
 	training_data = (featureTrainMatrix, training_data[1])
 	validation_data = (featureValidMatrix, validation_data[1])
@@ -28,37 +28,37 @@ def assignFeatures(trainSubset, validSusbet, inputFeature, breadthFeature, holes
 	return training_data, validation_data
 
 
-def createFeatures(inputMatrix, inputFeature, breadthFeature, holesFeature, lineLenFeature):
+def createFeatures(inputMatrix, sfo, silent=False):
 
-	if (breadthFeature):
-		print("Creating breadth feature")
+	if (sfo.breadthFeature):
+		if not silent: print("Creating breadth feature")
 		brInput = createBreadthFeatureMatrixFromInput(inputMatrix, BF_IDEAL_CHUNK_NUM)
 
-	if (holesFeature):
-		print("Creating holes feature")
+	if (sfo.holesFeature):
+		if not silent: print("Creating holes feature")
 		holesInput = createHolesFeatureMatrixFromInput(inputMatrix)
 
-	if (lineLenFeature):
-		print("Creating line length feature")
+	if (sfo.lineLenFeature):
+		if not silent: print("Creating line length feature")
 		llInput = createLongestLinesFeatureMatrixFromInput(inputMatrix)
 
 	#====Combine Features====#
-	if (inputFeature):
+	if (sfo.inputFeature):
 		result = inputMatrix
 
-	if (breadthFeature):
+	if (sfo.breadthFeature):
 		if (result is None):
 			result = brInput
 		else:
 			result = np.concatenate((result, brInput),0)
 
-	if (holesFeature):
+	if (sfo.holesFeature):
 		if (result is None):
 			result = holesInput
 		else:
 			result = np.concatenate((result, holesInput),0)
 
-	if(lineLenFeature):
+	if(sfo.lineLenFeature):
 		if (result is None):
 			result = llInput
 		else:

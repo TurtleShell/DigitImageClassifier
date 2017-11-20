@@ -9,6 +9,7 @@ from DataFormatFunctions import *
 from BreadthFirst import *
 from HolesFeature import *
 from LongestLines import *
+from Features import *
 
 
 def drawRectangle(index, prob, probCanvas):
@@ -59,27 +60,13 @@ def scaleDownCoords(scale, drawn_coords):
 	return scaled_down_coords
 
 
-def inputToFeatureVector(imageVector):
-	featureVector1 = createBreadthFeatureMatrixFromInput(imageVector, 20)
-	featureVector2 = createHolesFeatureMatrixFromInput(imageVector)
-	featureVector3 = createLongestLinesFeatureMatrixFromInput(imageVector)
 
-	featureVector = np.concatenate((imageVector, featureVector1, featureVector2, featureVector3), 0)
-
-	return featureVector
-
-
-
-def translateToNumber(scale, drawn_coords, resultBox, probDistBox, probCanvas):
-
-
+def translateToNumber(neuralNet, scale, drawn_coords, resultBox, probDistBox, probCanvas):
 	imageVector = createImageVector(scale, drawn_coords)
 
-	featureVector = inputToFeatureVector(imageVector)
+	selectedFeaturesObj = neuralNet.getSelectedFeaturesObj()
 
-	#neuralNet = loadNeuralNet("TestZoneNetworkFull")
-	#neuralNet = loadNeuralNet("TestZoneNetwork")
-	neuralNet = loadNeuralNet("TestZoneNetworkPassUp")
+	featureVector = createFeatures(imageVector, selectedFeaturesObj, silent=True)
 
 	resultVector = neuralNet.feedForward(featureVector[:,0])
 	probStr = createReadableOutputVector(resultVector)
@@ -105,10 +92,7 @@ def createImageVector(scale, drawn_coords):
 
 		if (coords.x > 0):
 			fattenList.append(Coords(coords.x-1,coords.y))
-		#if (x < 26):
-		#	fattenList.append((x+1,y))
-		#if (y > 0):
-		#	fattenList.append((x,y-1))
+
 		if (coords.y < 26):
 			fattenList.append(Coords(coords.x,coords.y+1))
 
@@ -150,12 +134,12 @@ def clear(canvas, drawn_coords):
 
 
 
-def main():
+def runGui(netName):
 
-	cds = Coords(0,0)
+	neuralNet = loadNeuralNet(netName)
+
 
 	scale = 16
-	
 	
 	drawn_coords = []
 	
@@ -176,7 +160,7 @@ def main():
 
 
 	identifyButton = Button(buttonFrame, text='Identify',
-			command=lambda: translateToNumber(scale, drawn_coords, resultBox, probDistBox, probCanvas))
+			command=lambda: translateToNumber(neuralNet, scale, drawn_coords, resultBox, probDistBox, probCanvas))
 	identifyButton.grid(row=0, column=0)
 	buttonFrame.grid_columnconfigure(0, pad=100)
 
@@ -212,11 +196,22 @@ def main():
 	
 	canvas.bind("<B1-Motion>", lambda event: mousemotion(event, scale, drawn_coords, canvas))
 	
-	root.bind("<Return>", lambda event: translateToNumber(scale, drawn_coords, resultBox, probDistBox, probCanvas))
+	root.bind("<Return>", lambda event: translateToNumber(neuralNet, scale, drawn_coords, resultBox, probDistBox, probCanvas))
 
 
 
 	root.mainloop()
+
+
+def main():
+
+	if (len(sys.argv) < 2):
+		print("Using default network")
+		netName = "UnnamedNetwork"
+	else:
+		netName = sys.argv[1]
+
+	runGui(netName)
 
 
 if __name__ == "__main__":
